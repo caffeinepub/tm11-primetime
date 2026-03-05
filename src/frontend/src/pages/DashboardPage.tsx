@@ -11,6 +11,7 @@ import {
   User as UserIcon,
   Users,
   Video,
+  Wallet,
 } from "lucide-react";
 import { useState } from "react";
 import { SiWhatsapp } from "react-icons/si";
@@ -34,7 +35,7 @@ export function DashboardPage({ user, onNavigate }: DashboardPageProps) {
   const level2Earnings = commissions
     .filter((c) => c.level === 2)
     .reduce((sum, c) => sum + c.amount, 0);
-  const level3Earnings = commissions
+  const _level3Earnings = commissions
     .filter((c) => c.level === 3)
     .reduce((sum, c) => sum + c.amount, 0);
   const totalEarnings = user.commissionBalance;
@@ -96,10 +97,16 @@ export function DashboardPage({ user, onNavigate }: DashboardPageProps) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           {
-            label: "Total Earned",
+            label: "Wallet Balance",
+            value: `₹${user.walletBalance ?? 0}`,
+            icon: <Wallet className="w-5 h-5" />,
+            highlight: true,
+          },
+          {
+            label: "Commission Earned",
             value: `₹${totalEarnings}`,
             icon: <IndianRupee className="w-5 h-5" />,
-            highlight: true,
+            highlight: false,
           },
           {
             label: "Level 1 (₹10)",
@@ -110,12 +117,6 @@ export function DashboardPage({ user, onNavigate }: DashboardPageProps) {
           {
             label: "Level 2 (₹5)",
             value: `₹${level2Earnings}`,
-            icon: <Network className="w-5 h-5" />,
-            highlight: false,
-          },
-          {
-            label: "Level 3 (₹3)",
-            value: `₹${level3Earnings}`,
             icon: <Network className="w-5 h-5" />,
             highlight: false,
           },
@@ -204,6 +205,23 @@ export function DashboardPage({ user, onNavigate }: DashboardPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            <button
+              type="button"
+              onClick={() => onNavigate("wallet")}
+              className="w-full flex items-center gap-4 p-4 bg-secondary/30 rounded-xl hover:bg-secondary/50 transition-colors text-left group"
+              data-ocid="dashboard.tab"
+            >
+              <div className="w-10 h-10 rounded-lg gold-gradient flex items-center justify-center">
+                <Wallet className="w-5 h-5 text-background" />
+              </div>
+              <div>
+                <div className="font-semibold text-sm">My Wallet</div>
+                <div className="text-xs text-muted-foreground">
+                  Check balance &amp; request withdrawal
+                </div>
+              </div>
+            </button>
+
             <button
               type="button"
               onClick={() => onNavigate("matrix")}

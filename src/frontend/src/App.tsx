@@ -7,6 +7,7 @@ import { AdminLoginPage } from "./pages/AdminLoginPage";
 import { AdminPaymentsPage } from "./pages/AdminPaymentsPage";
 import { AdminUsersPage } from "./pages/AdminUsersPage";
 import { AdminVideosPage } from "./pages/AdminVideosPage";
+import { AdminWithdrawalsPage } from "./pages/AdminWithdrawalsPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -14,6 +15,7 @@ import { MatrixTreePage } from "./pages/MatrixTreePage";
 import { PendingPage } from "./pages/PendingPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { VideoLibraryPage } from "./pages/VideoLibraryPage";
+import { WalletPage } from "./pages/WalletPage";
 import {
   getCurrentUserId,
   getUsers,
@@ -88,6 +90,8 @@ function App() {
           return <AdminPaymentsPage />;
         case "admin-videos":
           return <AdminVideosPage />;
+        case "admin-withdrawals":
+          return <AdminWithdrawalsPage />;
         default:
           return <AdminDashboardPage onNavigate={handleNavigate} />;
       }
@@ -108,6 +112,8 @@ function App() {
           return <VideoLibraryPage user={freshUser} />;
         case "pending":
           return <PendingPage user={freshUser} />;
+        case "wallet":
+          return <WalletPage user={freshUser} onNavigate={handleNavigate} />;
         default:
           return freshUser.status === "pending" ? (
             <PendingPage user={freshUser} />

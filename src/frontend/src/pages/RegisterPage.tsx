@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Check, Copy, Crown, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { addUser, generateId, generateReferralCode, getUsers } from "../store";
 import type { PageName } from "../types";
@@ -33,6 +33,14 @@ export function RegisterPage({ onNavigate }: RegisterPageProps) {
   const [referredBy, setReferredBy] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [copiedUpi, setCopiedUpi] = useState(false);
+
+  // Pre-fill referral code from URL param on mount
+  useEffect(() => {
+    const ref = new URLSearchParams(window.location.search).get("ref");
+    if (ref) {
+      setReferredBy(ref.toUpperCase().slice(0, 10));
+    }
+  }, []);
 
   // Step 2 fields
   const [utr, setUtr] = useState("");
@@ -79,6 +87,7 @@ export function RegisterPage({ onNavigate }: RegisterPageProps) {
       utrNumber: null,
       joinedAt: new Date().toISOString(),
       commissionBalance: 0,
+      walletBalance: 0,
       matrixLevel: null,
     });
 
@@ -454,6 +463,28 @@ export function RegisterPage({ onNavigate }: RegisterPageProps) {
               </div>
             </div>
 
+            {/* Submission details confirmation */}
+            <div className="bg-background/30 border border-border/50 rounded-xl p-4 space-y-3">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Submitting with your payment
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">Name</span>
+                <span className="text-sm font-semibold text-foreground">
+                  {name}
+                </span>
+              </div>
+              <div className="h-px bg-border/40" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  Phone Number
+                </span>
+                <span className="text-sm font-semibold text-foreground">
+                  {mobile}
+                </span>
+              </div>
+            </div>
+
             {/* UTR input */}
             <div className="space-y-1.5">
               <Label htmlFor="utr">UTR / Transaction Reference Number *</Label>
@@ -497,7 +528,7 @@ export function RegisterPage({ onNavigate }: RegisterPageProps) {
                 {referralCode}
               </div>
               <div className="text-xs text-muted-foreground">
-                Save this — you'll need it to login
+                Save this — share it to earn commissions
               </div>
             </div>
           </CardContent>

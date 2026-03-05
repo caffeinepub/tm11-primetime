@@ -16,10 +16,12 @@ export type PageName =
   | "matrix"
   | "videos"
   | "pending"
+  | "wallet"
   | "admin-dashboard"
   | "admin-users"
   | "admin-payments"
-  | "admin-videos";
+  | "admin-videos"
+  | "admin-withdrawals";
 
 export interface User {
   id: string;
@@ -33,7 +35,20 @@ export interface User {
   utrNumber: string | null;
   joinedAt: string;
   commissionBalance: number;
+  walletBalance: number;
   matrixLevel: number | null;
+}
+
+export type WithdrawalStatus = "pending" | "approved" | "rejected";
+
+export interface WithdrawalRequest {
+  id: string;
+  userId: string;
+  amount: number;
+  upiId: string;
+  status: WithdrawalStatus;
+  requestedAt: string;
+  processedAt?: string;
 }
 
 export interface Commission {

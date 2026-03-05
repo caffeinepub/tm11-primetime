@@ -4,11 +4,14 @@ import type {
   User,
   UserStatus,
   Video,
+  WithdrawalRequest,
+  WithdrawalStatus,
 } from "./types";
 
 const USERS_KEY = "tm11_users";
 const COMMISSIONS_KEY = "tm11_commissions";
 const VIDEOS_KEY = "tm11_videos";
+const WITHDRAWALS_KEY = "tm11_withdrawals";
 const CURRENT_USER_KEY = "tm11_current_user";
 const INITIALIZED_KEY = "tm11_initialized";
 
@@ -142,6 +145,7 @@ const SAMPLE_USERS: User[] = [
     utrNumber: "UTR987654321",
     joinedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
     commissionBalance: 10,
+    walletBalance: 150,
     matrixLevel: 1,
   },
   {
@@ -156,6 +160,7 @@ const SAMPLE_USERS: User[] = [
     utrNumber: "UTR123456789",
     joinedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     commissionBalance: 0,
+    walletBalance: 0,
     matrixLevel: null,
   },
 ];
@@ -165,6 +170,7 @@ export function initializeStore(): void {
   localStorage.setItem(USERS_KEY, JSON.stringify(SAMPLE_USERS));
   localStorage.setItem(COMMISSIONS_KEY, JSON.stringify([]));
   localStorage.setItem(VIDEOS_KEY, JSON.stringify(SAMPLE_VIDEOS));
+  localStorage.setItem(WITHDRAWALS_KEY, JSON.stringify([]));
   localStorage.setItem(INITIALIZED_KEY, "true");
 }
 
@@ -256,6 +262,11 @@ export function approveUser(userId: string): void {
     user.paymentStatus = "confirmed" as PaymentStatus;
   }
 
+  // Credit Rs.150 joining bonus on approval (only once — don't credit again if already approved)
+  if (users[userIdx].status !== "approved") {
+    user.walletBalance = (user.walletBalance ?? 0) + 150;
+  }
+
   // Find referrer chain and assign matrix level
   let referrerLevel = 0;
   if (user.referredBy) {
@@ -306,6 +317,114 @@ export function approveUser(userId: string): void {
 
 export function getUserCommissions(userId: string): Commission[] {
   return getCommissions().filter((c) => c.toUserId === userId);
+}
+
+// ─── Withdrawal helpers ───────────────────────────────────────────────────────
+
+export function getWithdrawals(): WithdrawalRequest[] {
+  const raw = localStorage.getItem(WITHDRAWALS_KEY);
+  return raw ? JSON.parse(raw) : [];
+}
+
+export function saveWithdrawals(withdrawals: WithdrawalRequest[]): void {
+  localStorage.setItem(WITHDRAWALS_KEY, JSON.stringify(withdrawals));
+}
+
+export function getUserWithdrawals(userId: string): WithdrawalRequest[] {
+  return getWithdrawals().filter((w) => w.userId === userId);
+}
+
+export function addWithdrawalRequest(
+  userId: string,
+  amount: number,
+  upiId: string,
+): { success: boolean; error?: string } {
+  const users = getUsers();
+  const userIdx = users.findIndex((u) => u.id === userId);
+  if (userIdx === -1) return { success: false, error: "User not found" };
+
+  const user = users[userIdx];
+  const totalBalance =
+    (user.walletBalance ?? 0) + (user.commissionBalance ?? 0);
+
+  if (amount < 500)
+    return { success: false, error: "Minimum withdrawal is Rs.500" };
+  if (amount > totalBalance)
+    return { success: false, error: "Insufficient balance" };
+
+  const withdrawals = getWithdrawals();
+  const hasPending = withdrawals.some(
+    (w) => w.userId === userId && w.status === "pending",
+  );
+  if (hasPending)
+    return {
+      success: false,
+      error: "You already have a pending withdrawal request",
+    };
+
+  withdrawals.push({
+    id: generateId(),
+    userId,
+    amount,
+    upiId,
+    status: "pending" as WithdrawalStatus,
+    requestedAt: new Date().toISOString(),
+  });
+  saveWithdrawals(withdrawals);
+  return { success: true };
+}
+
+export function approveWithdrawal(withdrawalId: string): void {
+  const withdrawals = getWithdrawals();
+  const wIdx = withdrawals.findIndex((w) => w.id === withdrawalId);
+  if (wIdx === -1) return;
+
+  const w = withdrawals[wIdx];
+  const users = getUsers();
+  const userIdx = users.findIndex((u) => u.id === w.userId);
+
+  if (userIdx !== -1) {
+    const user = users[userIdx];
+    let remaining = w.amount;
+    let walletBal = user.walletBalance ?? 0;
+    let commBal = user.commissionBalance ?? 0;
+
+    // Deduct from walletBalance first, then commissionBalance
+    if (walletBal >= remaining) {
+      walletBal -= remaining;
+      remaining = 0;
+    } else {
+      remaining -= walletBal;
+      walletBal = 0;
+      commBal = Math.max(0, commBal - remaining);
+    }
+
+    users[userIdx] = {
+      ...user,
+      walletBalance: walletBal,
+      commissionBalance: commBal,
+    };
+    saveUsers(users);
+  }
+
+  withdrawals[wIdx] = {
+    ...w,
+    status: "approved" as WithdrawalStatus,
+    processedAt: new Date().toISOString(),
+  };
+  saveWithdrawals(withdrawals);
+}
+
+export function rejectWithdrawal(withdrawalId: string): void {
+  const withdrawals = getWithdrawals();
+  const wIdx = withdrawals.findIndex((w) => w.id === withdrawalId);
+  if (wIdx === -1) return;
+  withdrawals[wIdx] = {
+    ...withdrawals[wIdx],
+    status: "rejected" as WithdrawalStatus,
+    processedAt: new Date().toISOString(),
+  };
+  saveWithdrawals(withdrawals);
 }
 
 export interface MatrixNode {

@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Crown, LogOut, Menu, X } from "lucide-react";
+import { Crown, LogOut, Menu, Wallet, X } from "lucide-react";
 import { useState } from "react";
 import type { User } from "../types";
 import type { PageName } from "../types";
@@ -70,6 +70,14 @@ export function Navbar({
               >
                 Video Library
               </button>
+              <button
+                type="button"
+                onClick={() => onNavigate("wallet")}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                <Wallet className="w-3.5 h-3.5" />
+                Wallet
+              </button>
             </>
           )}
           {isAdmin && (
@@ -101,6 +109,13 @@ export function Navbar({
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Videos
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate("admin-withdrawals")}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Withdrawals
               </button>
             </>
           )}
@@ -227,6 +242,17 @@ export function Navbar({
               >
                 Video Library
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onNavigate("wallet");
+                  setMobileOpen(false);
+                }}
+                className="text-sm py-2 text-left text-foreground flex items-center gap-1.5"
+              >
+                <Wallet className="w-4 h-4" />
+                Wallet
+              </button>
             </>
           )}
           {isAdmin && (
@@ -270,6 +296,16 @@ export function Navbar({
                 className="text-sm py-2 text-left text-foreground"
               >
                 Videos
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onNavigate("admin-withdrawals");
+                  setMobileOpen(false);
+                }}
+                className="text-sm py-2 text-left text-foreground"
+              >
+                Withdrawals
               </button>
             </>
           )}

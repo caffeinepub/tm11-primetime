@@ -21,26 +21,20 @@ interface LoginPageProps {
 
 export function LoginPage({ onNavigate, onLogin }: LoginPageProps) {
   const [mobile, setMobile] = useState("");
-  const [referralCode, setReferralCode] = useState("");
   const [error, setError] = useState("");
 
   function handleLogin() {
     setError("");
-    if (!mobile.trim() || !referralCode.trim()) {
-      setError("Please enter both mobile number and referral code");
+    if (!mobile.trim()) {
+      setError("Please enter your mobile number");
       return;
     }
 
     const users = getUsers();
-    const user = users.find(
-      (u) =>
-        u.mobile === mobile && u.referralCode === referralCode.toUpperCase(),
-    );
+    const user = users.find((u) => u.mobile === mobile);
 
     if (!user) {
-      setError(
-        "Invalid mobile number or referral code. Please check and try again.",
-      );
+      setError("Mobile number not found. Please check and try again.");
       return;
     }
 
@@ -89,24 +83,6 @@ export function LoginPage({ onNavigate, onLogin }: LoginPageProps) {
               data-ocid="login.input"
               onKeyDown={(e) => e.key === "Enter" && handleLogin()}
             />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="login-ref">Your Referral Code</Label>
-            <Input
-              id="login-ref"
-              placeholder="Your 6-character referral code"
-              value={referralCode}
-              onChange={(e) =>
-                setReferralCode(e.target.value.toUpperCase().slice(0, 6))
-              }
-              className="bg-input font-mono uppercase tracking-widest"
-              data-ocid="login.input"
-              onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-            />
-            <p className="text-xs text-muted-foreground">
-              This is the code you received during registration
-            </p>
           </div>
 
           {error && (
