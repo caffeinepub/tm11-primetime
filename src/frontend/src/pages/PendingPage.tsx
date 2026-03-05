@@ -10,20 +10,15 @@ interface PendingPageProps {
 }
 
 const UPI_ID = "yespay.bizsbiz12758@yesbankltd";
-const UPI_NAME = "MDBN TRADE MASTER GAMING INDIA";
-const UPI_AMOUNT = "118";
-
-function buildUpiUrl(
-  app: "phonepe" | "gpay" | "bhim",
-  userName: string,
-  userMobile: string,
-) {
-  const params = `pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_NAME)}&am=${UPI_AMOUNT}&cu=INR&tn=${encodeURIComponent(`${userName}-${userMobile}`)}`;
+function buildUpiUrl(app: "phonepe" | "gpay" | "bhim") {
+  const pa = encodeURIComponent(UPI_ID);
+  const pn = encodeURIComponent("MDBN Trade Master Gaming");
+  const upiParams = `pa=${pa}&pn=${pn}&cu=INR`;
   if (app === "phonepe")
-    return `intent://pay?${params}#Intent;scheme=upi;package=com.phonepe.app;end`;
+    return `intent://pay?${upiParams}#Intent;scheme=upi;package=com.phonepe.app;S.browser_fallback_url=https%3A%2F%2Fphonepe.com;end`;
   if (app === "gpay")
-    return `intent://upi/pay?${params}#Intent;scheme=googlepay;package=com.google.android.apps.nbu.paisa.user;end`;
-  return `intent://pay?${params}#Intent;scheme=upi;package=in.org.npci.upiapp;end`;
+    return `intent://upi/pay?${upiParams}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https%3A%2F%2Fpay.google.com;end`;
+  return `intent://pay?${upiParams}#Intent;scheme=upi;package=in.org.npci.upiapp;S.browser_fallback_url=https%3A%2F%2Fbhimupi.org.in;end`;
 }
 
 export function PendingPage({ user }: PendingPageProps) {
@@ -38,9 +33,7 @@ export function PendingPage({ user }: PendingPageProps) {
   }
 
   function openUpiApp(app: "phonepe" | "gpay" | "bhim") {
-    // Auto-copy UPI ID to clipboard so user can paste it after returning
-    navigator.clipboard.writeText(UPI_ID).catch(() => {});
-    const url = buildUpiUrl(app, user.name, user.mobile);
+    const url = buildUpiUrl(app);
     window.location.href = url;
   }
 
@@ -243,7 +236,8 @@ export function PendingPage({ user }: PendingPageProps) {
                       </button>
                     </div>
                     <p className="text-xs text-muted-foreground text-center">
-                      Tap to open app — UPI ID is auto-copied for pasting
+                      Tap to open — UPI ID auto-filled, just enter ₹118 &amp;
+                      pay
                     </p>
                   </div>
                 </div>

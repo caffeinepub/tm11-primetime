@@ -123,23 +123,21 @@ export function RegisterPage({ onNavigate }: RegisterPageProps) {
   }
 
   const UPI_ID = "yespay.bizsbiz12758@yesbankltd";
-  const UPI_NAME = "MDBN TRADE MASTER GAMING INDIA";
-  const UPI_AMOUNT = "118";
 
   function buildUpiUrl(app: "phonepe" | "gpay" | "bhim" | "generic") {
-    const params = `pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_NAME)}&am=${UPI_AMOUNT}&cu=INR&tn=${encodeURIComponent(`${name}-${mobile}`)}`;
+    const pa = encodeURIComponent(UPI_ID);
+    const pn = encodeURIComponent("MDBN Trade Master Gaming");
+    const upiParams = `pa=${pa}&pn=${pn}&cu=INR`;
     if (app === "phonepe")
-      return `intent://pay?${params}#Intent;scheme=upi;package=com.phonepe.app;end`;
+      return `intent://pay?${upiParams}#Intent;scheme=upi;package=com.phonepe.app;S.browser_fallback_url=https%3A%2F%2Fphonepe.com;end`;
     if (app === "gpay")
-      return `intent://upi/pay?${params}#Intent;scheme=googlepay;package=com.google.android.apps.nbu.paisa.user;end`;
+      return `intent://upi/pay?${upiParams}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https%3A%2F%2Fpay.google.com;end`;
     if (app === "bhim")
-      return `intent://pay?${params}#Intent;scheme=upi;package=in.org.npci.upiapp;end`;
-    return `upi://pay?${params}`;
+      return `intent://pay?${upiParams}#Intent;scheme=upi;package=in.org.npci.upiapp;S.browser_fallback_url=https%3A%2F%2Fbhimupi.org.in;end`;
+    return `upi://pay?${upiParams}`;
   }
 
   function openUpiApp(app: "phonepe" | "gpay" | "bhim") {
-    // Copy UPI ID to clipboard so user can paste it after returning from the UPI app
-    navigator.clipboard.writeText(UPI_ID).catch(() => {});
     const url = buildUpiUrl(app);
     window.location.href = url;
   }
@@ -431,7 +429,7 @@ export function RegisterPage({ onNavigate }: RegisterPageProps) {
                   </button>
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
-                  Tap to open app — UPI ID is auto-copied for pasting
+                  Tap to open — UPI ID auto-filled, just enter ₹118 &amp; pay
                 </p>
               </div>
 
@@ -449,9 +447,10 @@ export function RegisterPage({ onNavigate }: RegisterPageProps) {
               </div>
 
               <div className="bg-background/30 rounded-lg p-3 text-xs text-muted-foreground">
-                <strong>Tip:</strong> Tap a UPI button above — the UPI ID is
-                automatically copied to your clipboard. After completing
-                payment, come back and paste your UTR number below.
+                <strong>Tip:</strong> Tap a UPI button to open the app — the
+                recipient UPI ID is already filled in. Enter ₹118 as the amount,
+                complete the payment, then come back and paste your UTR number
+                below.
               </div>
             </div>
 
