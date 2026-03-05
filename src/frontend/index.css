@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque[opsz,wdth,wght].woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("/assets/fonts/CabinetGrotesk-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/assets/fonts/Satoshi-Variable.woff2") format("woff2");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+    /* Dark luxe gold theme */
+    --background: 0.12 0.008 260;
+    --foreground: 0.95 0.015 75;
+    --card: 0.16 0.01 260;
+    --card-foreground: 0.92 0.018 75;
+    --popover: 0.18 0.012 260;
+    --popover-foreground: 0.92 0.018 75;
+    --primary: 0.78 0.14 75;
+    --primary-foreground: 0.1 0.02 260;
+    --secondary: 0.22 0.015 260;
+    --secondary-foreground: 0.85 0.02 75;
+    --muted: 0.2 0.01 260;
+    --muted-foreground: 0.58 0.02 75;
+    --accent: 0.68 0.18 55;
+    --accent-foreground: 0.1 0.02 260;
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.985 0 0;
+    --border: 0.28 0.02 260;
+    --input: 0.22 0.015 260;
+    --ring: 0.78 0.14 75;
+    --gold: 0.78 0.14 75;
+    --gold-bright: 0.88 0.16 85;
+    --gold-dim: 0.55 0.1 70;
+    --chart-1: 0.78 0.14 75;
+    --chart-2: 0.68 0.18 55;
+    --chart-3: 0.58 0.15 260;
+    --chart-4: 0.72 0.12 160;
+    --chart-5: 0.65 0.2 30;
+    --sidebar: 0.14 0.01 260;
+    --sidebar-foreground: 0.92 0.018 75;
+    --sidebar-primary: 0.78 0.14 75;
+    --sidebar-primary-foreground: 0.1 0.02 260;
+    --sidebar-accent: 0.2 0.012 260;
+    --sidebar-accent-foreground: 0.85 0.02 75;
+    --sidebar-border: 0.28 0.02 260;
+    --sidebar-ring: 0.78 0.14 75;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Satoshi", system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .gold-gradient {
+    background: linear-gradient(135deg, oklch(0.88 0.16 85), oklch(0.68 0.18 55));
+  }
+
+  .gold-text {
+    background: linear-gradient(135deg, oklch(0.88 0.16 85), oklch(0.68 0.18 55));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .dark-card {
+    background: oklch(0.16 0.01 260);
+    border: 1px solid oklch(0.28 0.02 260);
+  }
+
+  .glass-card {
+    background: oklch(0.18 0.012 260 / 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid oklch(0.35 0.03 75 / 0.3);
+  }
+
+  .gold-border {
+    border: 1px solid oklch(0.68 0.14 75 / 0.4);
+  }
+
+  .matrix-node-filled {
+    background: linear-gradient(135deg, oklch(0.78 0.14 75 / 0.2), oklch(0.68 0.18 55 / 0.15));
+    border: 2px solid oklch(0.78 0.14 75);
+  }
+
+  .matrix-node-empty {
+    background: oklch(0.18 0.01 260 / 0.5);
+    border: 2px dashed oklch(0.35 0.02 260);
+  }
+
+  .matrix-node-self {
+    background: linear-gradient(135deg, oklch(0.78 0.14 75 / 0.4), oklch(0.68 0.18 55 / 0.3));
+    border: 2px solid oklch(0.88 0.16 85);
+    box-shadow: 0 0 20px oklch(0.78 0.14 75 / 0.4);
+  }
+
+  .status-approved {
+    background: oklch(0.72 0.12 160 / 0.15);
+    color: oklch(0.72 0.12 160);
+    border: 1px solid oklch(0.72 0.12 160 / 0.3);
+  }
+
+  .status-pending {
+    background: oklch(0.78 0.14 75 / 0.15);
+    color: oklch(0.78 0.14 75);
+    border: 1px solid oklch(0.78 0.14 75 / 0.3);
+  }
+
+  .status-rejected {
+    background: oklch(0.577 0.245 27 / 0.15);
+    color: oklch(0.65 0.22 27);
+    border: 1px solid oklch(0.577 0.245 27 / 0.3);
+  }
+}
